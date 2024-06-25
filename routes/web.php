@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\PelanggaranController;
 use App\Http\Controllers\JenisPelanggaranController;
 use App\Http\Controllers\ParpolController;
 use App\Http\Controllers\UserController;
@@ -38,5 +39,7 @@ Route::middleware('auth')->group(function () {
 Route::resource('parpols', ParpolController::class)->middleware(['auth', 'verified']);
 
 Route::resource('jenispelanggarans', JenisPelanggaranController::class)->middleware(['auth', 'verified']);
+
+Route::resource('pelanggarans', PelanggaranController::class)->middleware(['auth', 'verified']);
 
 require __DIR__.'/auth.php';

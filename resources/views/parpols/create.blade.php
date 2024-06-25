@@ -4,7 +4,7 @@
   </x-slot>
 
   <div class="p-4 bg-white rounded-lg shadow-xs">
-    <form action="{{ route('parpols.update') }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('parpols.store') }}" method="POST" enctype="multipart/form-data">
       @csrf
       <div class="grid grid-cols-1 gap-6 mt-4 sm:grid-cols-1">
         <div>

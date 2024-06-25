@@ -10,4 +10,9 @@ class JenisPelanggaran extends Model
     use HasFactory;
 
     protected $fillable = ['jenis_pelanggaran'];
+
+    public function pelanggaran()
+    {
+        return $this->hasMany(Pelanggaran::class);
+    }
 }
