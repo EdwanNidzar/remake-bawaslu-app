@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\LaporanPelanggaranController;
 use App\Http\Controllers\PelanggaranController;
 use App\Http\Controllers\JenisPelanggaranController;
 use App\Http\Controllers\ParpolController;
@@ -41,5 +42,12 @@ Route::resource('parpols', ParpolController::class)->middleware(['auth', 'verifi
 Route::resource('jenispelanggarans', JenisPelanggaranController::class)->middleware(['auth', 'verified']);
 
 Route::resource('pelanggarans', PelanggaranController::class)->middleware(['auth', 'verified']);
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::resource('laporanpelanggarans', LaporanPelanggaranController::class);
+    Route::get('laporanpelanggarans/regency/{province_id}', [LaporanPelanggaranController::class, 'getRegency']);
+    Route::get('laporanpelanggarans/districts/{regency_id}', [LaporanPelanggaranController::class, 'getDistricts']);
+    Route::get('laporanpelanggarans/villages/{district_id}', [LaporanPelanggaranController::class, 'getVillages']);
+});
 
 require __DIR__.'/auth.php';

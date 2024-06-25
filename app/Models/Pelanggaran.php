@@ -16,6 +16,7 @@ class Pelanggaran extends Model
         'nama_bacaleg',
         'dapil',
         'tanggal_input',
+        'keterangan',
     ];
 
     public function pelanggaranImages()
@@ -32,5 +33,10 @@ class Pelanggaran extends Model
     public function jenisPelanggaran()
     {
         return $this->belongsTo(JenisPelanggaran::class);
+    }
+
+    public function laporanPelanggaran()
+    {
+        return $this->hasOne(LaporanPelanggaran::class);
     }
 }

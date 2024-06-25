@@ -92,6 +92,17 @@
         </div>
         {{-- end input field for tanggal_input --}}
 
+        {{-- input field for keterangan --}}
+        <div class="col-span-2">
+          <label for="keterangan" class="block text-sm font-medium text-gray-700">Keterangan</label>
+          <textarea id="keterangan" name="keterangan" rows="3"
+            class="block w-full px-3 py-2 mt-1 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            placeholder="Keterangan"></textarea>
+          @error('keterangan')
+            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+          @enderror
+        {{-- end keterangan --}}
+
         {{-- multi input image --}}
         <div class="col-span-2">
           <label for="image" class="block text-sm font-medium text-gray-700">Bukti Pelanggaran</label>

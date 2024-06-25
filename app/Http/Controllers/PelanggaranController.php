@@ -8,6 +8,7 @@ use App\Models\Parpol;
 use App\Models\JenisPelanggaran;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 
 class PelanggaranController extends Controller
 {
@@ -45,6 +46,7 @@ class PelanggaranController extends Controller
             'nama_bacaleg' => 'required',
             'dapil' => 'required',
             'tanggal_input' => 'required',
+            'keterangan' => 'required',
             'image' => 'required|array|min:1|max:5',
             'image.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
@@ -57,6 +59,7 @@ class PelanggaranController extends Controller
             $pelanggaran->nama_bacaleg = $request->nama_bacaleg;
             $pelanggaran->dapil = $request->dapil;
             $pelanggaran->tanggal_input = $request->tanggal_input;
+            $pelanggaran->keterangan = $request->keterangan;
             $pelanggaran->save();
 
             if ($request->hasFile('image')) {
@@ -114,6 +117,7 @@ class PelanggaranController extends Controller
             'nama_bacaleg' => 'required',
             'dapil' => 'required',
             'tanggal_input' => 'required',
+            'keterangan' => 'required',
             'image' => 'array|min:1|max:5',
             'image.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
@@ -126,6 +130,7 @@ class PelanggaranController extends Controller
             $pelanggaran->nama_bacaleg = $request->nama_bacaleg;
             $pelanggaran->dapil = $request->dapil;
             $pelanggaran->tanggal_input = $request->tanggal_input;
+            $pelanggaran->keterangan = $request->keterangan;
             $pelanggaran->save();
 
             if ($request->hasFile('image')) {

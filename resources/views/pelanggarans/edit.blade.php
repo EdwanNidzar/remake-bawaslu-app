@@ -100,6 +100,17 @@
         </div>
         {{-- end input field for tanggal_input --}}
 
+        {{-- ketetangan --}}
+        <div class="col-span-2">
+          <label for="keterangan" class="block text-sm font-medium text-gray-700">Keterangan</label>
+          <textarea id="keterangan" name="keterangan" rows="3"
+            class="block w-full px-3 py-2 mt-1 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            placeholder="Keterangan">{{ $pelanggaran->keterangan }}</textarea>
+          @error('keterangan')
+            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+          @enderror
+        {{-- end keterangan --}}
+
         {{-- multi input image --}}
         <div class="col-span-2">
           <label for="image" class="block text-sm font-medium text-gray-700">Bukti Pelanggaran</label>
@@ -137,7 +148,7 @@
         <div class="col-span-2 flex justify-end mt-4">
           <button type="submit"
             class="px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-blue-600 border border-transparent rounded-lg active:bg-blue-600 hover:bg-blue-700 focus:outline-none focus:shadow-outline-blue">
-            Simpan
+            Edit
           </button>
           <a href="{{ route('pelanggarans.index') }}"
             class="px-4 py-2 text-sm font-medium leading-5 text-gray-700 transition-colors duration-150 bg-white border border-gray-300 rounded-lg active:bg-gray-100 hover:bg-gray-200 focus:outline-none focus:shadow-outline-gray">
