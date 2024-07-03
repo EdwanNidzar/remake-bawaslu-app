@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\Province;
 use App\Models\Regency;
-use App\Models\District;
 use App\Models\Village;
+use App\Models\District;
+use App\Models\Province;
 use App\Models\Pelanggaran;
+use Illuminate\Http\Request;
 use App\Models\LaporanPelanggaran;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Crypt;
 
 class LaporanPelanggaranController extends Controller
 {
@@ -28,7 +29,7 @@ class LaporanPelanggaranController extends Controller
      */
     public function create()
     {
-        $pelanggarans = Pelanggaran::with(['parpol', 'jenisPelanggaran'])->get();
+        $pelanggarans = Pelanggaran::with(['parpol', 'jenisPelanggaran', 'pelanggaranImages'])->get();
         $provinces = Province::all();
         return view('laporanpelanggaran.create', compact(['pelanggarans', 'provinces']));
     }
@@ -129,7 +130,43 @@ class LaporanPelanggaranController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        // Validate incoming request data
+        $request->validate([
+            'pelanggaran_id' => 'required',
+            'alamat' => 'required',
+            'provinsi_id' => 'required',
+            'regency_id' => 'required',
+            'district_id' => 'required',
+            'village_id' => 'required',
+            'latitude' => 'required',
+            'longitude' => 'required',
+        ]);
+
+        try {
+            // Create a new instance of LaporanPelanggaran
+            $laporan = LaporanPelanggaran::find($id);
+
+            // Assign validated data to the model
+            $laporan->pelanggaran_id = $request->pelanggaran_id;
+            $laporan->address = $request->alamat;
+            $laporan->province_id = $request->provinsi_id;
+            $laporan->regency_id = $request->regency_id;
+            $laporan->district_id = $request->district_id;
+            $laporan->village_id = $request->village_id;
+            $laporan->latitude = $request->latitude;
+            $laporan->longitude = $request->longitude;
+            $laporan->user_id = Auth::user()->id;
+
+            if ($laporan->save()) {
+                return redirect()->route('laporanpelanggarans.index')->with('success', 'Laporan berhasil diperbarui');
+            } else {
+                return redirect()->route('laporanpelanggarans.index')->with('error', 'Laporan gagal diperbarui');
+            }
+        } catch (\Exception $e) {
+            return redirect()
+                ->route('laporanpelanggarans.index')
+                ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
     }
 
     /**

@@ -3,7 +3,7 @@
     {{ __('Tambah Data Laporan Pelanggaran') }}
   </x-slot>
 
-  <div class="p-4 bg-white rounded-lg shadow-lg" >
+  <div class="p-4 bg-white rounded-lg shadow-lg">
     <!-- Include Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
       integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
@@ -153,14 +153,51 @@
       const pelanggaranId = this.value;
       const pelanggaran = pelanggarans.find(p => p.id == pelanggaranId);
       if (pelanggaran) {
+        const images = (pelanggaran.pelanggaran_images || []).map(image => `
+          <img src="{{ asset('storage/pelanggarans/${image.image}') }}" alt="${image.image}" class="object-cover rounded-lg m-1">
+        `).join('');
+
         document.getElementById('pelanggaran-details').innerHTML = `
-        <p><strong>Nama Bacaleg:</strong> ${pelanggaran.nama_bacaleg}</p>
-        <p><strong>Jenis Pelanggaran:</strong> ${pelanggaran.jenis_pelanggaran.jenis_pelanggaran}</p>
-        <p><strong>Status Peserta Pemilu:</strong> ${pelanggaran.status_peserta_pemilu}</p>
-        <p><strong>Daerah Pemilihan (Dapil):</strong> ${pelanggaran.dapil}</p>
-        <p><strong>Tanggal Input:</strong> ${pelanggaran.tanggal_input}</p>
-        <p><strong>Keterangan:</strong> ${pelanggaran.keterangan}</p>
-      `;
+          <table class="min-w-full bg-white border border-gray-200">
+            <tbody>
+              <tr class="border-b">
+                <td class="px-4 py-2 font-semibold">Nama Bacaleg</td>
+                <td>:</td>
+                <td class="px-4 py-2">${pelanggaran.nama_bacaleg}</td>
+              </tr>
+              <tr class="border-b">
+                <td class="px-4 py-2 font-semibold">Jenis Pelanggaran</td>
+                <td>:</td>
+                <td class="px-4 py-2">${pelanggaran.jenis_pelanggaran.jenis_pelanggaran}</td>
+              </tr>
+              <tr class="border-b">
+                <td class="px-4 py-2 font-semibold">Status Peserta Pemilu</td>
+                <td>:</td>
+                <td class="px-4 py-2">${pelanggaran.status_peserta_pemilu}</td>
+              </tr>
+              <tr class="border-b">
+                <td class="px-4 py-2 font-semibold">Daerah Pemilihan (Dapil)</td>
+                <td>:</td>
+                <td class="px-4 py-2">${pelanggaran.dapil}</td>
+              </tr>
+              <tr class="border-b">
+                <td class="px-4 py-2 font-semibold">Tanggal Input</td>
+                <td>:</td>
+                <td class="px-4 py-2">${pelanggaran.tanggal_input}</td>
+              </tr>
+              <tr>
+                <td class="px-4 py-2 font-semibold">Keterangan</td>
+                <td>:</td>
+                <td class="px-4 py-2">${pelanggaran.keterangan}</td>
+              </tr>
+              <tr>
+                <td class="px-4 py-2 font-semibold">Bukti Bukti</td>
+                <td>:</td>
+                <td class="flex flex-wrap gap-2">${images}</td>
+              </tr>
+            </tbody>
+          </table>
+        `;
       } else {
         document.getElementById('pelanggaran-details').innerHTML = '';
       }
