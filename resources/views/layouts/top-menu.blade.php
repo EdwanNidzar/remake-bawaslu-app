@@ -24,8 +24,12 @@
             <span class="absolute top-0 right-0 block h-2 w-2 rounded-full ring-2 ring-white bg-red-600"></span>
           </button>
           <!-- Avarar -->
-          <img class="object-cover w-10 h-10 mx-4 rounded-full" src="https://via.placeholder.com/150"
-            alt="{{ Auth::user()->name }}" />
+          @if (Auth::user()->avatar)
+            <img src="{{ asset('storage/' . Auth::user()->avatar) }}" alt="{{ Auth::user()->name }}"
+              class="w-8 h-8 rounded-full object-cover mr-2">
+          @else
+            <img src="https://placehold.jp/150x150.png" alt="avatar" class="w-8 h-8 rounded-full object-cover mr-2">
+          @endif
           <!-- Username -->
           <button class="align-middle rounded-full focus:shadow-outline-purple focus:outline-none"
             @click="toggleProfileMenu" @keydown.escape="closeProfileMenu" aria-label="Account" aria-haspopup="true">
