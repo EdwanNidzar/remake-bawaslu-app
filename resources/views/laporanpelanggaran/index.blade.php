@@ -55,6 +55,7 @@
               <th class="px-4 py-3">Nama Peserta Pemilu</th>
               <th class="px-4 py-3">Jenis Pelanggaran</th>
               <th class="px-4 py-3">Nama Partai</th>
+              <th class="px-4 py-3">Status</th>
               <th class="px-4 py-3">Action</th>
             </tr>
           </thead>
@@ -71,41 +72,165 @@
                   {{ $laporan->pelanggaran->parpol->parpol_name }}
                 </td>
                 <td class="px-4 py-3 text-sm">
-                  <a href="{{ route('laporanpelanggarans.show', $laporan->id) }}"
-                    class="px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
-                    Show
-                  </a>
-                  <a href="{{ route('laporanpelanggarans.edit', $laporan->id) }}"
-                    class="px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-green-600 border border-transparent rounded-lg active:bg-green-600 hover:bg-green-700 focus:outline-none focus:shadow-outline-green">
-                    Edit
-                  </a>
-                  <!-- Modal Trigger -->
-                  <div x-data="{ open: false }" class="inline">
-                    <button @click="open = true"
-                      class="px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-red-600 border border-transparent rounded-lg active:bg-red-600 hover:bg-red-700 focus:outline-none focus:shadow-outline-red">
-                      Delete
-                    </button>
+                  @if ($laporan->verif)
+                    @if ($laporan->verif->status == 'approved')
+                      <span
+                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-500 text-white">
+                        Verified
+                      </span>
+                    @elseif ($laporan->verif->status == 'rejected')
+                      <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-500 text-white">
+                        Rejected
+                      </span>
+                    @endif
+                  @else
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-400 text-white">
+                      Pending
+                    </span>
+                  @endif
+                </td>
 
-                    <!-- Modal -->
-                    <div x-show="open"
-                      class="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75">
-                      <div @click.away="open = false" class="bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto">
-                        <h2 class="text-lg font-semibold text-gray-900">Confirm Delete</h2>
-                        <p class="mt-2 text-sm text-gray-600">Are you sure you want to delete this item?</p>
-                        <div class="mt-4 flex justify-end space-x-2">
-                          <button @click="open = false"
-                            class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300">
-                            Cancel
-                          </button>
-                          <form action="{{ route('laporanpelanggarans.destroy', $laporan->id) }}" method="POST"
-                            class="inline">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit"
-                              class="px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-red-600 border border-transparent rounded-lg active:bg-red-600 hover:bg-red-700 focus:outline-none focus:shadow-outline-red">
-                              Delete
+                <td class="px-4 py-3 text-sm">
+                  <div class="flex space-x-2 items-center">
+                    <!-- View Button with Icon -->
+                    <div>
+                      <a href="{{ route('laporanpelanggarans.show', $laporan->id) }}"
+                        class="flex items-center px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-blue-600 border border-transparent rounded-lg active:bg-blue-600 hover:bg-blue-700 focus:outline-none focus:shadow-outline-blue">
+                        <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true"
+                          xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
+                          viewBox="0 0 24 24">
+                          <path stroke="currentColor" stroke-width="2"
+                            d="M20 12c0 1.2-4.03 6-9 6s-9-4.8-9-6c0-1.2 4.03-6 9-6s9 4.8 9 6Z" />
+                          <path stroke="currentColor" stroke-width="2" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                        </svg>
+                      </a>
+                    </div>
+                    <!-- Edit Button with Icon -->
+                    <div>
+                      <a href="{{ route('laporanpelanggarans.edit', $laporan->id) }}"
+                        class="flex items-center px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-yellow-400 border border-transparent rounded-lg active:bg-yellow-500 hover:bg-yellow-600 focus:outline-none focus:shadow-outline-blue"
+                        x-show="!('{{ $laporan->verif && ($laporan->verif->status == 'rejected' || $laporan->verif->status == 'approved') }}')">
+                        <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true"
+                          xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
+                          viewBox="0 0 24 24">
+                          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z" />
+                        </svg>
+                      </a>
+                    </div>
+                    <!-- Modal Trigger DELETE -->
+                    <div x-data="{ openDelete: false }" class="inline">
+                      <!-- DELETE BTN -->
+                      <button @click="openDelete = true"
+                        class="px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-red-600 border border-transparent rounded-lg active:bg-red-600 hover:bg-red-700 focus:outline-none focus:shadow-outline-red"
+                        x-show="!('{{ $laporan->verif && ($laporan->verif->status == 'rejected' || $laporan->verif->status == 'approved') }}')">
+                        <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true"
+                          xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
+                          viewBox="0 0 24 24">
+                          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z" />
+                        </svg>
+                      </button>
+                      <!-- Delete Action -->
+                      <div x-show="openDelete"
+                        class="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75">
+                        <div @click.away="openDelete = false"
+                          class="bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto">
+                          <h2 class="text-lg font-semibold text-gray-900">Confirm Delete</h2>
+                          <p class="mt-2 text-sm text-gray-600">Are you sure you want to delete this item?</p>
+                          <div class="mt-4 flex justify-end space-x-2">
+                            <button @click="openDelete = false"
+                              class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300">
+                              Cancel
                             </button>
-                          </form>
+                            <form action="{{ route('laporanpelanggarans.destroy', $laporan->id) }}" method="POST"
+                              class="inline">
+                              @csrf
+                              @method('DELETE')
+                              <button type="submit"
+                                class="px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-red-600 border border-transparent rounded-lg active:bg-red-600 hover:bg-red-700 focus:outline-none focus:shadow-outline-red">
+                                Delete
+                              </button>
+                            </form>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Modal Trigger VERIFY -->
+                    <div x-data="{ openVerify: false }" class="inline">
+                      <!-- VERIFY Trigger -->
+                      <button @click="openVerify = true"
+                        class="flex items-center px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-blue-600 border border-transparent rounded-lg active:bg-blue-600 hover:bg-blue-700 focus:outline-none focus:shadow-outline-blue"
+                        x-show="!('{{ $laporan->verif && ($laporan->verif->status == 'rejected' || $laporan->verif->status == 'approved') }}')">
+                        <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true"
+                          xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
+                          viewBox="0 0 24 24">
+                          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                            stroke-width="2" d="M5 11.917 9.724 16.5 19 7.5" />
+                        </svg>
+                      </button>
+                      <!-- VERIFY Action -->
+                      <div x-show="openVerify"
+                        class="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75">
+                        <div @click.away="openVerify = false"
+                          class="bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto">
+                          <h2 class="text-lg font-semibold text-gray-900">Confirm Verification</h2>
+                          <p class="mt-2 text-sm text-gray-600">Are you sure you want to verify this?</p>
+                          <div class="mt-4 flex justify-end space-x-2">
+                            <button @click="openVerify = false"
+                              class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300">
+                              Cancel
+                            </button>
+                            <form action="{{ route('laporanpelanggarans.verif', $laporan->id) }}" method="POST"
+                              class="inline">
+                              @csrf
+                              @method('POST')
+                              <button type="submit"
+                                class="px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-blue-600 border border-transparent rounded-lg active:bg-blue-600 hover:bg-blue-700 focus:outline-none focus:shadow-outline-blue">
+                                Verify
+                              </button>
+                            </form>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Modal Trigger REJECT -->
+                    <div x-data="{ openReject: false }" class="inline">
+                      <!-- REJECT Trigger -->
+                      <button @click="openReject = true"
+                        class="flex items-center px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-red-600 border border-transparent rounded-lg active:bg-red-600 hover:bg-red-700 focus:outline-none focus:shadow-outline-red"
+                        x-show="!('{{ $laporan->verif && ($laporan->verif->status == 'rejected' || $laporan->verif->status == 'approved') }}')">
+                        <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true"
+                          xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
+                          viewBox="0 0 24 24">
+                          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                            stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                      <!-- REJECT Action -->
+                      <div x-show="openReject"
+                        class="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75">
+                        <div @click.away="openReject = false"
+                          class="bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto">
+                          <h2 class="text-lg font-semibold text-gray-900">Confirm Rejection</h2>
+                          <p class="mt-2 text-sm text-gray-600">Are you sure you want to reject this?</p>
+                          <div class="mt-4 flex justify-end space-x-2">
+                            <button @click="openReject = false"
+                              class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300">
+                              Cancel
+                            </button>
+                            <form action="{{ route('laporanpelanggarans.reject', $laporan->id) }}" method="POST"
+                              class="inline">
+                              @csrf
+                              @method('POST')
+                              <button type="submit"
+                                class="px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-red-600 border border-transparent rounded-lg active:bg-red-600 hover:bg-red-700 focus:outline-none focus:shadow-outline-red">
+                                Reject
+                              </button>
+                            </form>
+                          </div>
                         </div>
                       </div>
                     </div>

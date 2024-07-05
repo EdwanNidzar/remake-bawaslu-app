@@ -46,4 +46,9 @@ class LaporanPelanggaran extends Model
         return $this->belongsTo(Village::class);
     }   
 
+    public function verif()
+    {
+        return $this->hasOne(Verif::class);
+    }
+
 }

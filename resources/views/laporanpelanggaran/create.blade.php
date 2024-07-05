@@ -154,8 +154,8 @@
       const pelanggaran = pelanggarans.find(p => p.id == pelanggaranId);
       if (pelanggaran) {
         const images = (pelanggaran.pelanggaran_images || []).map(image => `
-          <img src="{{ asset('storage/pelanggarans/${image.image}') }}" alt="${image.image}" class="object-cover rounded-lg m-1">
-        `).join('');
+            <img src="{{ asset('storage/pelanggarans/${image.image}') }}" alt="${image.image}" class="object-cover rounded-lg m-1" style="width: 50%;">
+          `).join('');
 
         document.getElementById('pelanggaran-details').innerHTML = `
           <table class="min-w-full bg-white border border-gray-200">

@@ -10,7 +10,7 @@ use App\Models\Pelanggaran;
 use Illuminate\Http\Request;
 use App\Models\LaporanPelanggaran;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Crypt;
+use App\Models\Verif;
 
 class LaporanPelanggaranController extends Controller
 {
@@ -19,7 +19,9 @@ class LaporanPelanggaranController extends Controller
      */
     public function index()
     {
-        $laporanPelanggarans = LaporanPelanggaran::with('pelanggaran.jenisPelanggaran', 'pelanggaran.parpol')->orderBy('id', 'DESC')->paginate(10);
+        $laporanPelanggarans = LaporanPelanggaran::with('pelanggaran.jenisPelanggaran', 'pelanggaran.parpol', 'verif')
+            ->orderByDesc('id')
+            ->paginate(10);
 
         return view('laporanpelanggaran.index', compact('laporanPelanggarans'));
     }
@@ -101,7 +103,7 @@ class LaporanPelanggaranController extends Controller
      */
     public function show(string $id)
     {
-        $laporanPelanggaran = LaporanPelanggaran::with(['pelanggaran', 'province', 'regency', 'district', 'village'])
+        $laporanPelanggaran = LaporanPelanggaran::with(['pelanggaran', 'province', 'regency', 'district', 'village', 'verif'])
             ->where('id', $id)
             ->first();
         return view('laporanpelanggaran.show', compact('laporanPelanggaran'));
@@ -180,6 +182,41 @@ class LaporanPelanggaranController extends Controller
             return redirect()->route('laporanpelanggarans.index')->with('success', 'Laporan berhasil dihapus');
         } else {
             return redirect()->route('laporanpelanggarans.index')->with('error', 'Laporan gagal dihapus');
+        }
+    }
+
+    /**
+     * Verify the specified resource.
+     */
+    public function verify(string $id)
+    {
+        $verif = new Verif();
+        $verif->laporan_pelanggaran_id = $id;
+        $verif->status = 'approved';
+        $verif->user_id = Auth::user()->id;
+
+        if ($verif->save()) {
+            return redirect()->route('laporanpelanggarans.index')->with('success', 'Laporan berhasil diverifikasi');
+        } else {
+            return redirect()->route('laporanpelanggarans.index')->with('error', 'Laporan gagal diverifikasi');
+        }
+    }
+
+    /**
+     * Reject the specified resource.
+     */
+    public function reject(Request $request, string $id)
+    {
+        $verif = new Verif();
+        $verif->laporan_pelanggaran_id = $id;
+        $verif->status = 'rejected';
+        $verif->user_id = Auth::user()->id;
+        $verif->note = $request->note;
+
+        if ($verif->save()) {
+            return redirect()->route('laporanpelanggarans.index')->with('success', 'Laporan berhasil direject');
+        } else {
+            return redirect()->route('laporanpelanggarans.index')->with('error', 'Laporan gagal direject');
         }
     }
 }

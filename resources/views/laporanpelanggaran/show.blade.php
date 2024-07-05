@@ -37,6 +37,48 @@
         <p class="block text-sm font-medium text-gray-700">Kelurahan/Desa</p>
         <p class="block text-lg font-semibold text-gray-900">{{ $laporanPelanggaran->village->name }}</p>
       </div>
+      <div class="col-span-2 grid grid-cols-2 gap-6">
+        <div>
+          <p class="block text-sm font-medium text-gray-700">Status Verifikasi</p>
+          <p class="block text-lg font-semibold text-gray-900">
+            @if ($laporanPelanggaran->verif)
+              @if ($laporanPelanggaran->verif->status == 'approved')
+                <span
+                  class="px-2 py-1 text-xs font-semibold leading-5 text-green-800 bg-green-100 rounded-full">Terverifikasi</span>
+              @elseif ($laporanPelanggaran->verif->status == 'rejected')
+                <span
+                  class="px-2 py-1 text-xs font-semibold leading-5 text-red-800 bg-red-100 rounded-full">Ditolak</span>
+              @else
+                <span
+                  class="px-2 py-1 text-xs font-semibold leading-5 text-red-800 bg-red-100 rounded-full">Pending</span>
+              @endif
+            @else
+              <span class="px-2 py-1 text-xs font-semibold leading-5 text-gray-800 bg-gray-100 rounded-full">Belum
+                Diverifikasi</span>
+            @endif
+          </p>
+        </div>
+        <div>
+          <p class="block text-sm font-medium text-gray-700">Note</p>
+          <p class="block text-lg font-semibold text-gray-900">
+            @if ($laporanPelanggaran->verif)
+              @if ($laporanPelanggaran->verif->status == 'rejected')
+                {{ $laporanPelanggaran->verif->note }}
+              @else
+                <span class="px-2 py-1 text-xs font-semibold leading-5 text-green-800 bg-green-100 rounded-full">
+                  @if ($laporanPelanggaran->verif->status == 'approved')
+                    Terverifikasi
+                  @elseif ($laporanPelanggaran->verif->status == 'rejected')
+                    Ditolak
+                  @else
+                    Pending
+                  @endif
+                </span>
+              @endif
+            @endif
+          </p>
+        </div>
+      </div>
       <div class="col-span-2">
         <p class="block text-sm font-medium text-gray-700">Alamat Pelanggaran</p>
         <p class="block text-lg font-semibold text-gray-900">{{ $laporanPelanggaran->address }}</p>
