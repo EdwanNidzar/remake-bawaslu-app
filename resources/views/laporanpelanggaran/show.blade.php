@@ -41,35 +41,28 @@
         <div>
           <p class="block text-sm font-medium text-gray-700">Status Verifikasi</p>
           <p class="block text-lg font-semibold text-gray-900">
-            @if ($laporanPelanggaran->verif)
-              @if ($laporanPelanggaran->verif->status == 'approved')
-                <span
-                  class="px-2 py-1 text-xs font-semibold leading-5 text-green-800 bg-green-100 rounded-full">Terverifikasi</span>
-              @elseif ($laporanPelanggaran->verif->status == 'rejected')
-                <span
-                  class="px-2 py-1 text-xs font-semibold leading-5 text-red-800 bg-red-100 rounded-full">Ditolak</span>
-              @else
-                <span
-                  class="px-2 py-1 text-xs font-semibold leading-5 text-red-800 bg-red-100 rounded-full">Pending</span>
-              @endif
+            @if ($laporanPelanggaran->status == 'approved')
+              <span
+                class="px-2 py-1 text-xs font-semibold leading-5 text-green-800 bg-green-100 rounded-full">Terverifikasi</span>
+            @elseif ($laporanPelanggaran->status == 'rejected')
+              <span
+                class="px-2 py-1 text-xs font-semibold leading-5 text-red-800 bg-red-100 rounded-full">Ditolak</span>
             @else
-              <span class="px-2 py-1 text-xs font-semibold leading-5 text-gray-800 bg-gray-100 rounded-full">Belum
-                Diverifikasi</span>
+              <span
+                class="px-2 py-1 text-xs font-semibold leading-5 text-red-800 bg-red-100 rounded-full">Pending</span>
             @endif
           </p>
         </div>
         <div>
           <p class="block text-sm font-medium text-gray-700">Note</p>
           <p class="block text-lg font-semibold text-gray-900">
-            @if ($laporanPelanggaran->verif)
-              @if ($laporanPelanggaran->verif->status == 'rejected')
-                {{ $laporanPelanggaran->verif->note }}
+            @if ($laporanPelanggaran->status)
+              @if ($laporanPelanggaran->status == 'rejected')
+                {{ $laporanPelanggaran->note }}
               @else
                 <span class="px-2 py-1 text-xs font-semibold leading-5 text-green-800 bg-green-100 rounded-full">
-                  @if ($laporanPelanggaran->verif->status == 'approved')
+                  @if ($laporanPelanggaran->status == 'approved')
                     Terverifikasi
-                  @elseif ($laporanPelanggaran->verif->status == 'rejected')
-                    Ditolak
                   @else
                     Pending
                   @endif

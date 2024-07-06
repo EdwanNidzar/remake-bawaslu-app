@@ -9,6 +9,7 @@ use App\Models\JenisPelanggaran;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class PelanggaranController extends Controller
 {
@@ -17,6 +18,22 @@ class PelanggaranController extends Controller
      */
     public function index()
     {
+        if (Auth::user()->hasRole('bawaslu-provinsi') || Auth::user()->hasRole('bawaslu-kabupaten-kota')) {
+            // Using eager loading to avoid N+1 query problem
+            $pelanggarans = Pelanggaran::with(['parpol', 'jenisPelanggaran'])
+                ->orderBy('id', 'DESC')
+                ->paginate(10);
+            return view('pelanggarans.index', compact('pelanggarans'));
+        } else {
+            // Using eager loading to avoid N+1 query problem
+            $pelanggarans = Pelanggaran::with(['parpol', 'jenisPelanggaran'])
+                ->where('pelapor_id', Auth::user()->id)
+                ->orderBy('id', 'DESC')
+                ->paginate(10);
+            return view('pelanggarans.index', compact('pelanggarans'));
+        }
+
+        // legacy code
         // Using eager loading to avoid N+1 query problem
         $pelanggarans = Pelanggaran::with(['parpol', 'jenisPelanggaran'])
             ->orderBy('id', 'DESC')
@@ -60,6 +77,7 @@ class PelanggaranController extends Controller
             $pelanggaran->dapil = $request->dapil;
             $pelanggaran->tanggal_input = $request->tanggal_input;
             $pelanggaran->keterangan = $request->keterangan;
+            $pelanggaran->pelapor_id = Auth::user()->id;
             $pelanggaran->save();
 
             if ($request->hasFile('image')) {
@@ -131,6 +149,7 @@ class PelanggaranController extends Controller
             $pelanggaran->dapil = $request->dapil;
             $pelanggaran->tanggal_input = $request->tanggal_input;
             $pelanggaran->keterangan = $request->keterangan;
+            $pelanggaran->pelapor_id = Auth::user()->id;
             $pelanggaran->save();
 
             if ($request->hasFile('image')) {
@@ -161,7 +180,7 @@ class PelanggaranController extends Controller
                 ->route('pelanggarans.index')
                 ->with('error', 'Data gagal diupdate: ' . $e->getMessage());
         }
-}
+    }
 
     /**
      * Remove the specified resource from storage.
@@ -182,7 +201,9 @@ class PelanggaranController extends Controller
                     $image->delete();
                 } catch (\Exception $e) {
                     // Log the error or handle it as needed
-                    return redirect()->route('pelanggarans.index')->with('error', 'Gagal menghapus gambar: ' . $e->getMessage());
+                    return redirect()
+                        ->route('pelanggarans.index')
+                        ->with('error', 'Gagal menghapus gambar: ' . $e->getMessage());
                 }
             }
 
@@ -191,11 +212,12 @@ class PelanggaranController extends Controller
                 $pelanggaran->delete();
                 return redirect()->route('pelanggarans.index')->with('success', 'Data berhasil dihapus');
             } catch (\Exception $e) {
-                return redirect()->route('pelanggarans.index')->with('error', 'Data gagal dihapus: ' . $e->getMessage());
+                return redirect()
+                    ->route('pelanggarans.index')
+                    ->with('error', 'Data gagal dihapus: ' . $e->getMessage());
             }
         }
 
         return redirect()->route('pelanggarans.index')->with('error', 'Data tidak ditemukan');
     }
-
 }

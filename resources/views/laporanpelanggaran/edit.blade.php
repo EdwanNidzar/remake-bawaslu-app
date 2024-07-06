@@ -126,7 +126,7 @@
         <div class="flex justify-end mt-4">
           <button type="submit"
             class="px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-blue-600 border border-transparent rounded-lg active:bg-blue-600 hover:bg-blue-700 focus:outline-none focus:shadow-outline-blue">
-            Simpan
+            Edit
           </button>
           <a href="{{ route('laporanpelanggarans.index') }}"
             class="px-4 py-2 text-sm font-medium leading-5 text-gray-700 transition-colors duration-150 bg-white border border-gray-300 rounded-lg active:bg-gray-100 hover:bg-gray-200 focus:outline-none focus:shadow-outline-gray">

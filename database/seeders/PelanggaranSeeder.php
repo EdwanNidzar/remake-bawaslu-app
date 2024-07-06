@@ -21,6 +21,7 @@ class PelanggaranSeeder extends Seeder
                 'dapil' => 'Jawa Tengah 1',
                 'tanggal_input' => '2021-01-01',
                 'keterangan' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+                'pelapor_id' => 3,
             ],
             [
                 'parpols_id' => 2,
@@ -30,6 +31,7 @@ class PelanggaranSeeder extends Seeder
                 'dapil' => 'Jawa Tengah 2',
                 'tanggal_input' => '2021-01-02',
                 'keterangan' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+                'pelapor_id' => 3,
             ],
             [
                 'parpols_id' => 3,
@@ -39,6 +41,7 @@ class PelanggaranSeeder extends Seeder
                 'dapil' => 'Jawa Tengah 3',
                 'tanggal_input' => '2021-01-03',
                 'keterangan' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+                'pelapor_id' => 3,
             ],
         ];
 

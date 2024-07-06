@@ -19,11 +19,13 @@ return new class extends Migration
             $table->string('nama_bacaleg');
             $table->string('dapil');
             $table->date('tanggal_input');
+            $table->unsignedBigInteger('pelapor_id');
             $table->timestamps();
 
             // Foreign key
             $table->foreign('parpols_id')->references('id')->on('parpols')->onDelete('cascade');
             $table->foreign('jenis_pelanggaran_id')->references('id')->on('jenis_pelanggarans')->onDelete('cascade');
+            $table->foreign('pelapor_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

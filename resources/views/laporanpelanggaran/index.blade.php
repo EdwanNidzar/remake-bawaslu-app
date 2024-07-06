@@ -72,19 +72,17 @@
                   {{ $laporan->pelanggaran->parpol->parpol_name }}
                 </td>
                 <td class="px-4 py-3 text-sm">
-                  @if ($laporan->verif)
-                    @if ($laporan->verif->status == 'approved')
-                      <span
-                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-500 text-white">
-                        Verified
-                      </span>
-                    @elseif ($laporan->verif->status == 'rejected')
-                      <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-500 text-white">
-                        Rejected
-                      </span>
-                    @endif
-                  @else
-                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-400 text-white">
+                  @if ($laporan->status == 'approved')
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-500 text-white">
+                      Verified
+                    </span>
+                  @elseif ($laporan->status == 'rejected')
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-500 text-white">
+                      Rejected
+                    </span>
+                  @elseif ($laporan->status == 'pending')
+                    <span
+                      class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-500 text-white">
                       Pending
                     </span>
                   @endif
@@ -109,7 +107,7 @@
                     <div>
                       <a href="{{ route('laporanpelanggarans.edit', $laporan->id) }}"
                         class="flex items-center px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-yellow-400 border border-transparent rounded-lg active:bg-yellow-500 hover:bg-yellow-600 focus:outline-none focus:shadow-outline-blue"
-                        x-show="!('{{ $laporan->verif && ($laporan->verif->status == 'rejected' || $laporan->verif->status == 'approved') }}')">
+                        x-show="!('{{ $laporan->status == 'approved' }}')">
                         <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true"
                           xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
                           viewBox="0 0 24 24">
@@ -117,13 +115,14 @@
                             d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z" />
                         </svg>
                       </a>
+
                     </div>
                     <!-- Modal Trigger DELETE -->
                     <div x-data="{ openDelete: false }" class="inline">
                       <!-- DELETE BTN -->
                       <button @click="openDelete = true"
                         class="px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-red-600 border border-transparent rounded-lg active:bg-red-600 hover:bg-red-700 focus:outline-none focus:shadow-outline-red"
-                        x-show="!('{{ $laporan->verif && ($laporan->verif->status == 'rejected' || $laporan->verif->status == 'approved') }}')">
+                        x-show="('{{ $laporan->status }}' === 'pending')">
                         <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true"
                           xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
                           viewBox="0 0 24 24">
@@ -162,7 +161,7 @@
                       <!-- VERIFY Trigger -->
                       <button @click="openVerify = true"
                         class="flex items-center px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-blue-600 border border-transparent rounded-lg active:bg-blue-600 hover:bg-blue-700 focus:outline-none focus:shadow-outline-blue"
-                        x-show="!('{{ $laporan->verif && ($laporan->verif->status == 'rejected' || $laporan->verif->status == 'approved') }}')">
+                        x-show="('{{ auth()->user()->hasRole('bawaslu-kabupaten-kota') }}' && '{{ $laporan->status }}' === 'pending')">
                         <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true"
                           xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
                           viewBox="0 0 24 24">
@@ -185,7 +184,7 @@
                             <form action="{{ route('laporanpelanggarans.verif', $laporan->id) }}" method="POST"
                               class="inline">
                               @csrf
-                              @method('POST')
+                              @method('PATCH')
                               <button type="submit"
                                 class="px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-blue-600 border border-transparent rounded-lg active:bg-blue-600 hover:bg-blue-700 focus:outline-none focus:shadow-outline-blue">
                                 Verify
@@ -201,7 +200,7 @@
                       <!-- REJECT Trigger -->
                       <button @click="openReject = true"
                         class="flex items-center px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-red-600 border border-transparent rounded-lg active:bg-red-600 hover:bg-red-700 focus:outline-none focus:shadow-outline-red"
-                        x-show="!('{{ $laporan->verif && ($laporan->verif->status == 'rejected' || $laporan->verif->status == 'approved') }}')">
+                        x-show="('{{ auth()->user()->hasRole('bawaslu-kabupaten-kota') }}' && '{{ $laporan->status }}' === 'pending')">
                         <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true"
                           xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
                           viewBox="0 0 24 24">
@@ -216,25 +215,31 @@
                           class="bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto">
                           <h2 class="text-lg font-semibold text-gray-900">Confirm Rejection</h2>
                           <p class="mt-2 text-sm text-gray-600">Are you sure you want to reject this?</p>
-                          <div class="mt-4 flex justify-end space-x-2">
-                            <button @click="openReject = false"
-                              class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300">
-                              Cancel
-                            </button>
-                            <form action="{{ route('laporanpelanggarans.reject', $laporan->id) }}" method="POST"
-                              class="inline">
-                              @csrf
-                              @method('POST')
+                          <form action="{{ route('laporanpelanggarans.reject', $laporan->id) }}" method="POST"
+                            class="mt-4">
+                            @csrf
+                            @method('PATCH')
+                            <!-- Input for rejection note -->
+                            <div class="mb-4">
+                              <label for="note" class="block text-sm font-medium text-gray-700">Rejection
+                                Note</label>
+                              <textarea id="note" name="note" rows="3"
+                                class="form-textarea mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-red-600 focus:ring focus:ring-red-600 focus:ring-opacity-50"></textarea>
+                            </div>
+                            <div class="flex justify-end space-x-2">
+                              <button type="button" @click="openReject = false"
+                                class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300">
+                                Cancel
+                              </button>
                               <button type="submit"
                                 class="px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-red-600 border border-transparent rounded-lg active:bg-red-600 hover:bg-red-700 focus:outline-none focus:shadow-outline-red">
                                 Reject
                               </button>
-                            </form>
-                          </div>
+                            </div>
+                          </form>
                         </div>
                       </div>
                     </div>
-                  </div>
                 </td>
               </tr>
             @endforeach

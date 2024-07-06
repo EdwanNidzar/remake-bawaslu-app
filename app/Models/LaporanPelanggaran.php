@@ -19,6 +19,9 @@ class LaporanPelanggaran extends Model
         'latitude',
         'longitude',
         'user_id',
+        'status',
+        'note',
+        'verify_by',
     ];
 
     public function pelanggaran()
@@ -44,11 +47,6 @@ class LaporanPelanggaran extends Model
     public function village()
     {
         return $this->belongsTo(Village::class);
-    }   
-
-    public function verif()
-    {
-        return $this->hasOne(Verif::class);
     }
 
 }

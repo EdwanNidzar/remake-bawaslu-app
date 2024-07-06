@@ -10,7 +10,6 @@ use App\Models\Pelanggaran;
 use Illuminate\Http\Request;
 use App\Models\LaporanPelanggaran;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Verif;
 
 class LaporanPelanggaranController extends Controller
 {
@@ -19,11 +18,24 @@ class LaporanPelanggaranController extends Controller
      */
     public function index()
     {
-        $laporanPelanggarans = LaporanPelanggaran::with('pelanggaran.jenisPelanggaran', 'pelanggaran.parpol', 'verif')
-            ->orderByDesc('id')
-            ->paginate(10);
+        // legacy code
+        // $laporanPelanggarans = LaporanPelanggaran::with('pelanggaran.jenisPelanggaran', 'pelanggaran.parpol')
+        //     ->orderByDesc('id')
+        //     ->paginate(10);
+        //     return view('laporanpelanggaran.index', compact('laporanPelanggarans'));
 
-        return view('laporanpelanggaran.index', compact('laporanPelanggarans'));
+        if (Auth::user()->hasRole('bawaslu-provinsi') || Auth::user()->hasRole('bawaslu-kabupaten-kota')) {
+            $laporanPelanggarans = LaporanPelanggaran::with('pelanggaran.jenisPelanggaran', 'pelanggaran.parpol')->orderByDesc('id')->paginate(10);
+
+            return view('laporanpelanggaran.index', compact('laporanPelanggarans'));
+        } else {
+            $laporanPelanggarans = LaporanPelanggaran::with('pelanggaran.jenisPelanggaran', 'pelanggaran.parpol')
+                ->where('user_id', Auth::user()->id)
+                ->orderByDesc('id')
+                ->paginate(10);
+
+            return view('laporanpelanggaran.index', compact('laporanPelanggarans'));
+        }
     }
 
     /**
@@ -31,7 +43,12 @@ class LaporanPelanggaranController extends Controller
      */
     public function create()
     {
-        $pelanggarans = Pelanggaran::with(['parpol', 'jenisPelanggaran', 'pelanggaranImages'])->get();
+        // Mendapatkan ID dari pengguna yang sedang terautentikasi
+        $id = auth()->id();
+
+        $pelanggarans = Pelanggaran::with(['parpol', 'jenisPelanggaran', 'pelanggaranImages'])
+            ->where('pelapor_id', $id)
+            ->get();
         $provinces = Province::all();
         return view('laporanpelanggaran.create', compact(['pelanggarans', 'provinces']));
     }
@@ -103,7 +120,7 @@ class LaporanPelanggaranController extends Controller
      */
     public function show(string $id)
     {
-        $laporanPelanggaran = LaporanPelanggaran::with(['pelanggaran', 'province', 'regency', 'district', 'village', 'verif'])
+        $laporanPelanggaran = LaporanPelanggaran::with(['pelanggaran', 'province', 'regency', 'district', 'village'])
             ->where('id', $id)
             ->first();
         return view('laporanpelanggaran.show', compact('laporanPelanggaran'));
@@ -114,15 +131,21 @@ class LaporanPelanggaranController extends Controller
      */
     public function edit(string $id)
     {
+        // Mendapatkan ID dari pengguna yang sedang terautentikasi
+        $pelapor_id = auth()->id();
+
         $laporanPelanggaran = LaporanPelanggaran::with(['pelanggaran', 'province', 'regency', 'district', 'village'])
             ->where('id', $id)
             ->first();
 
-        $pelanggarans = Pelanggaran::with(['parpol', 'jenisPelanggaran'])->get();
+        $pelanggarans = $pelanggarans = Pelanggaran::with(['parpol', 'jenisPelanggaran', 'pelanggaranImages'])
+            ->where('pelapor_id', $pelapor_id)
+            ->get();
+
         $provinces = Province::all();
-        $regencies = Regency::where('province_id', $laporanPelanggaran->provinsi_id)->get();
-        $districts = District::where('regency_id', $laporanPelanggaran->kabupaten_id)->get();
-        $villages = Village::where('district_id', $laporanPelanggaran->kecamatan_id)->get();
+        $regencies = Regency::where('province_id', $laporanPelanggaran->province_id)->get();
+        $districts = District::where('regency_id', $laporanPelanggaran->regency_id)->get();
+        $villages = Village::where('district_id', $laporanPelanggaran->district_id)->get();
 
         return view('laporanpelanggaran.edit', compact('laporanPelanggaran', 'pelanggarans', 'provinces', 'regencies', 'districts', 'villages'));
     }
@@ -157,6 +180,7 @@ class LaporanPelanggaranController extends Controller
             $laporan->village_id = $request->village_id;
             $laporan->latitude = $request->latitude;
             $laporan->longitude = $request->longitude;
+            $laporan->status = 'pending';
             $laporan->user_id = Auth::user()->id;
 
             if ($laporan->save()) {
@@ -190,9 +214,9 @@ class LaporanPelanggaranController extends Controller
      */
     public function verify(string $id)
     {
-        $verif = new Verif();
-        $verif->laporan_pelanggaran_id = $id;
+        $verif = LaporanPelanggaran::findOrFail($id);
         $verif->status = 'approved';
+        $verif->save();
         $verif->user_id = Auth::user()->id;
 
         if ($verif->save()) {
@@ -207,11 +231,11 @@ class LaporanPelanggaranController extends Controller
      */
     public function reject(Request $request, string $id)
     {
-        $verif = new Verif();
-        $verif->laporan_pelanggaran_id = $id;
+        $verif = LaporanPelanggaran::findOrFail($id);
         $verif->status = 'rejected';
-        $verif->user_id = Auth::user()->id;
+        $verif->save();
         $verif->note = $request->note;
+        $verif->verify_by = Auth::user()->id;
 
         if ($verif->save()) {
             return redirect()->route('laporanpelanggarans.index')->with('success', 'Laporan berhasil direject');

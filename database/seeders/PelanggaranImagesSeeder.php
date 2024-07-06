@@ -2,9 +2,10 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Faker\Factory as Faker;
+use App\Models\Pelanggaran;
+use App\Models\PelanggaranImages;
 
 class PelanggaranImagesSeeder extends Seeder
 {
@@ -15,23 +16,24 @@ class PelanggaranImagesSeeder extends Seeder
     {
         $faker = Faker::create();
 
-        $pelanggaranIds = [1, 2, 3]; // Array pelanggaran_id yang ingin Anda gunakan
+        // Fetch existing pelanggaran_ids from the database
+        $pelanggaranIds = Pelanggaran::pluck('id')->toArray();
 
         foreach ($pelanggaranIds as $pelanggaranId) {
-            $numberOfImages = rand(1, 5); // Tentukan jumlah gambar acak untuk setiap pelanggaran_id
+            $numberOfImages = rand(1, 5); // Determine a random number of images for each pelanggaran_id
 
             for ($i = 0; $i < $numberOfImages; $i++) {
                 // Generate a fake image
                 $imagePath = $faker->image(storage_path('app/public/pelanggarans'), 480, 480, null, false);
 
-                // Buat array data
+                // Create data array
                 $data = [
                     'pelanggaran_id' => $pelanggaranId,
                     'image' => $imagePath,
                 ];
 
-                // Simpan data ke database
-                \App\Models\PelanggaranImages::create($data);
+                // Save data to the database
+                PelanggaranImages::create($data);
             }
         }
     }

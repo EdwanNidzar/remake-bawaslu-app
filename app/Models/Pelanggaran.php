@@ -39,4 +39,9 @@ class Pelanggaran extends Model
     {
         return $this->hasOne(LaporanPelanggaran::class);
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'pelapor_id');
+    }
 }
